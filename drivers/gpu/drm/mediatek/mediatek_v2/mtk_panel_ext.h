@@ -453,6 +453,7 @@ struct mtk_panel_params {
 
 	struct mtk_panel_cm_params cm_params;
 	struct mtk_panel_spr_params spr_params;
+	unsigned int te_delay;
 #ifdef CONFIG_MI_DISP
 	int err_flag_irq_gpio;
 	int err_flag_irq_flags;
