@@ -1862,8 +1862,15 @@ static int __gpufreq_clock_control(enum gpufreq_power_state power)
 	GPUFREQ_TRACE_START("power=%d", power);
 
 	if (power == POWER_ON) {
-		__gpufreq_switch_clksrc(CLOCK_MAIN);
 
+		ret = clk_prepare_enable(g_clk->clk_mux);
+		if (unlikely(ret)) {
+			__gpufreq_abort(GPUFREQ_CCF_EXCEPTION,
+				"fail to enable clk_mux (%d)", ret);
+			goto done;
+		}
+
+		__gpufreq_switch_clksrc(CLOCK_MAIN);
 		if (readl(g_topckgen_base + 0x50) & 0x40000) {
 			udelay(10);
 		} else {
@@ -1874,8 +1881,11 @@ static int __gpufreq_clock_control(enum gpufreq_power_state power)
 				__gpufreq_switch_clksrc(CLOCK_MAIN);
 				udelay(10);
 
-				if (++i > 2)
-					GPUFREQ_LOGI("switch clock_main tiem=%d", i);
+				if (++i > 5) {
+					__gpufreq_abort(GPUFREQ_CCF_EXCEPTION,
+					"fail to switch clock_main (%d)", i);
+					goto done;
+				}
 			}
 		}
 
@@ -1892,6 +1902,7 @@ static int __gpufreq_clock_control(enum gpufreq_power_state power)
 	} else {
 		clk_disable_unprepare(g_clk->subsys_bg3d);
 		__gpufreq_switch_clksrc(CLOCK_SUB);
+		clk_disable_unprepare(g_clk->clk_mux);
 		g_gpu.cg_count--;
 	}
 
