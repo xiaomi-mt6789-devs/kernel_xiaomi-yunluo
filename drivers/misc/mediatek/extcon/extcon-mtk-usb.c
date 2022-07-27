@@ -260,11 +260,11 @@ static int mtk_extcon_tcpc_notifier(struct notifier_block *nb,
 		break;
 	case TCP_NOTIFY_DR_SWAP:
 		if (noti->swap_state.new_role == PD_ROLE_UFP &&
-				extcon->c_role == USB_ROLE_HOST) {
+				extcon->c_role != USB_ROLE_DEVICE) {
 			mtk_usb_extcon_set_role(extcon, USB_ROLE_NONE);
 			mtk_usb_extcon_set_role(extcon, USB_ROLE_DEVICE);
 		} else if (noti->swap_state.new_role == PD_ROLE_DFP &&
-				extcon->c_role == USB_ROLE_DEVICE) {
+				extcon->c_role != USB_ROLE_HOST) {
 			mtk_usb_extcon_set_role(extcon, USB_ROLE_NONE);
 			mtk_usb_extcon_set_role(extcon, USB_ROLE_HOST);
 		}
