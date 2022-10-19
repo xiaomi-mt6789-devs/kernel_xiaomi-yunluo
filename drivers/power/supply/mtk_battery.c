@@ -2886,6 +2886,25 @@ static int reset_set(struct mtk_battery *gm,
 	return 0;
 }
 
+static int temp_th_set(struct mtk_battery *gm,
+	struct mtk_battery_sysfs_field_info *attr,
+	int val)
+{
+	int gap = val;
+	int tmp = force_get_tbat(gm, true);
+
+	gm->bat_tmp_c_ht = tmp + gap;
+	gm->bat_tmp_c_lt = tmp - gap;
+
+	bm_debug(
+		"[%s]FG_DAEMON_CMD_SET_FG_BAT_TMP_C_GAP=%d ht:%d lt:%d\n",
+		__func__, gap,
+		gm->bat_tmp_c_ht,
+		gm->bat_tmp_c_lt);
+
+	return 0;
+}
+
 static ssize_t bat_sysfs_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
@@ -2949,6 +2968,7 @@ static struct mtk_battery_sysfs_field_info battery_sysfs_field_tbl[] = {
 	BAT_SYSFS_FIELD_RW(smart_batt, BAT_PROP_SMART_BATT),
 	BAT_SYSFS_FIELD_RW(night_charging, BAT_PROP_NIGHT_CHARGING),
 	BAT_SYSFS_FIELD_RW(input_suspend, BAT_PROP_INPUT_SUSPEND),
+	BAT_SYSFS_FIELD_WO(temp_th, BAT_PROP_TEMP_TH_GAP),
 };
 
 int battery_get_property(enum battery_property bp,

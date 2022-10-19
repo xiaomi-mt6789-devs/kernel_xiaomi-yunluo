@@ -122,6 +122,7 @@ enum battery_property {
 	BAT_PROP_SMART_BATT,
 	BAT_PROP_NIGHT_CHARGING,
 	BAT_PROP_INPUT_SUSPEND,
+	BAT_PROP_TEMP_TH_GAP,
 };
 
 struct battery_data {
