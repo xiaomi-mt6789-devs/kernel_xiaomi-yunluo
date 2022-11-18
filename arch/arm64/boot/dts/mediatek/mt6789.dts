@@ -6377,6 +6377,7 @@
 			dr_mode = "otg";
 			usb-role-switch;
 			cdp-block;
+			wakeup-source;
 			pericfg = <&pericfg>;
 			infracg = <&infracfg_ao>;
 			port {
