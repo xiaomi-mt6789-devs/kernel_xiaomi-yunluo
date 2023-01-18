@@ -913,8 +913,10 @@ static s32 cmdq_sec_fill_iwc_msg(struct cmdq_sec_context *context,
 		instr[0] = 0;
 	else if (instr[-2] == 0x1 && instr[-1] == 0x40000000)
 		instr[-2] = 0;
-	else
+    else {
 		cmdq_err("find EOC failed: %#x %#x", instr[1], instr[0]);
+		return -EFAULT;
+	}
 	iwc_msg->command.waitCookie = task->waitCookie;
 	iwc_msg->command.resetExecCnt = task->resetExecCnt;
 
