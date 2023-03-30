@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: (GPL-2.0 OR MIT)
 /*
  * Copyright (C) 2021 MediaTek Inc.
+ * Copyright (C) 2022 XiaoMi, Inc.
  */
+
 /dts-v1/;
 /plugin/;
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -197,7 +199,7 @@
 		switch_sel_en_gpio = <&pio 107 0x0>;
 		ti,bq2589x,charge-detect-enable;
 		interrupt-names = "chr_stat";
-		ti,bq2589x,termination-current = <400>;
+		ti,bq2589x,termination-current = <448>;
 		phys = <&u2port0 PHY_TYPE_USB2>;
 		phy-names = "usb2-phy";
 		usb = <&usb>;
@@ -274,7 +276,7 @@
 
 &charger {
 	charger = <&bq2589x>;
-	usb_charger_current = <500000>;
+	usb_charger_current = <512000>;
 	ac_charger_current = <2050000>;
 	ac_charger_input_current = <2050000>;
 	charging_host_charger_current = <1500000>;
@@ -288,8 +290,8 @@
 	jeita_fallback_hyst = <5>;
 	jeita_forward_hyst = <5>;
 
-	jeita_fcc_cfg = <(-100)	0	4200	780	780
-			1	50	4200	780	780
+	jeita_fcc_cfg = <(-100)	0	4200	704	704
+			1	50	4200	704	704
 			51	100	4200	2340	2340
 			101	150	4200	3600	3600
 			151	350	4200	3600	3600
@@ -300,8 +302,8 @@
 			51	100	4450
 			101	150	4450
 			151	350	4450
-			351	480	4450
-			481	600	4100>;
+			351	470	4450
+			471	600	4100>;
 
 	thermal_limit_dcp = <2000 1800 1800 1800 1800 1800 1800 1800 1800 1800 1800 1800 1700 1600 1400 1200>;
 	thermal_limit_qc2 = <3600 3400 3200 3000 2800 2600 2400 2200 2000 1800 1600 1400 500 500 500 500>;
@@ -310,6 +312,13 @@
 	min_charge_temp_plus_x_degree = <(-8)>;
 	max_charge_temp = <60>;
 	max_charge_temp_minus_x_degree = <58>;
+
+	ffc_cv_1 = <4450000>;
+	ffc_cv_2 = <4434000>;
+	ffc_cv_3 = <4418000>;
+	chg_cycle_count_level1 = <1>;
+	chg_cycle_count_level2 = <100>;
+	chg_cycle_count_level3 = <300>;
 
 };
 
@@ -324,7 +333,7 @@
 	pd_charger_current = <500000>;
 	pre_charger_current = <250000>;
 	/* battery temperature protection */
-	temp_t4_threshold = <60>;
+	temp_t4_threshold = <58>;
 	temp_t3_threshold = <45>;
 	temp_t1_threshold = <(-10)>;
 	boot_battery_voltage = <3600000>;

@@ -266,6 +266,7 @@
 				regulator-max-microvolt = <3500000>;
 				regulator-enable-ramp-delay = <680>;
 				regulator-allowed-modes = <0 2>;
+				regulator-always-on;
 			};
 			mt6363_vcn13: VCN13 {
 				regulator-compatible = "VCN13";
