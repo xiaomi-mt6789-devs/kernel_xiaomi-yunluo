@@ -12,7 +12,7 @@
 
 #ifdef CONFIG_UFSFEATURE
 #include "ufshcd.h"
-#include "ufsfeature.h"
+#include "vendor/feature/ufsfeature.h"
 #endif
 
 /*
