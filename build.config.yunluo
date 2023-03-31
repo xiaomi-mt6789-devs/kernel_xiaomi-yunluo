@@ -10,6 +10,7 @@ KERNEL_DIR=yunluo-kernel
 
 FILES="
 arch/arm64/boot/Image.gz
+arch/arm64/boot/dts/mediatek/mt6789.dtb
 "
 
 # Strip kernel modules
