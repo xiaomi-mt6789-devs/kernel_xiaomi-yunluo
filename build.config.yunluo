@@ -12,6 +12,9 @@ FILES="
 arch/arm64/boot/Image.gz
 "
 
+# Strip kernel modules
+DO_NOT_STRIP_MODULES=0
+
 MAKE_GOALS="${MAKE_GOALS} Image.gz dtbs"
 
 ABI_OUT_TAG="mtk"
