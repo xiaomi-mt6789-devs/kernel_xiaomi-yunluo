@@ -432,22 +432,18 @@ int ktz8866_brightness_set(int level)
 
 	ktz8866_reg_write_bytes(KTZ8866_DISP_BB_LSB, v[1]);
 	ktz8866_reg_write_bytes(KTZ8866_DISP_BB_MSB, v[0]);
-	pr_info("%s level = %d, tmp_bl = %d", __func__, level, tmp_bl);
 
 	if (level == 0 && g_ktz8866_led.level != 0) {
 		/* disable BL and current sink*/
 		//ktz8866_reg_write_bytes(KTZ8866_DISP_BL_ENABLE, 0x0);
 		g_ktz8866_led.hbm_on = 0;
-		pr_info("ktz8866_brightness_set, close\n");
 	} else if (level > 0 && g_ktz8866_led.level == 0) {
 		/* enable BL and current sink*/
 		ktz8866_reg_write_bytes(KTZ8866_DISP_BL_ENABLE, 0x4f);
 		ktz8866_reg_write_bytes(KTZ8866_DISP_BC2, 0xcd);
-		pr_info("ktz8866_brightness_set, enable level:%d\n", level);
 	}
 
 	ktz8866_reg_read_bytes(KTZ8866_DISP_FLAGS, &read);
-	pr_info("ZT3 ktz8866 reading 0x%02x is 0x%02x\n", KTZ8866_DISP_FLAGS, read);
 
 	g_ktz8866_led.level = level;
 	mutex_unlock(&g_ktz8866_led.lock);
