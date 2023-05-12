@@ -51,7 +51,7 @@
 #include <linux/platform_data/spi-mt65xx.h>
 #endif
 
-#define NVT_DEBUG 1
+#define NVT_DEBUG 0
 
 #define MI_DRM_NOTIFIER
 //---GPIO number---
