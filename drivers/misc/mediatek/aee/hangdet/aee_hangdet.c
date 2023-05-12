@@ -398,7 +398,7 @@ static void aee_dump_timer_func(struct timer_list *t)
 }
 
 static void kwdt_process_kick(int local_bit, int cpu,
-				unsigned long curInterval, char msg_buf[],
+				unsigned long curInterval,
 				unsigned int original_kicker)
 {
 	unsigned int dump_timeout = 0, r_counter = DEFAULT_INTERVAL;
@@ -411,20 +411,12 @@ static void kwdt_process_kick(int local_bit, int cpu,
 	    (CHG_TMO_DLY_SEC + 5) * 1000000000)) {
 		if (!aee_dump_timer_c) {
 			aee_dump_timer_c = 1;
-			snprintf(msg_buf, WK_MAX_MSG_SIZE, "wdtk-et %s %d cpu=%d o_k=%d\n",
-				  __func__, __LINE__, cpu, original_kicker);
 			spin_unlock_bh(&lock);
-			pr_info("%s", msg_buf);
 			kwdt_dump_func();
 			return;
 		}
 
-		snprintf(msg_buf, WK_MAX_MSG_SIZE,
-			"all wdtk was already stopped cpu=%d o_k=%d\n",
-			cpu, original_kicker);
-
 		spin_unlock_bh(&lock);
-		pr_info("%s", msg_buf);
 		return;
 	}
 
@@ -451,20 +443,12 @@ static void kwdt_process_kick(int local_bit, int cpu,
 	}
 
 	wk_tsk_kick_time[cpu] = sched_clock();
-	snprintf(msg_buf, WK_MAX_MSG_SIZE,
-	 "[wdk-c] cpu=%d o_k=%d lbit=0x%x cbit=0x%x,%x,%d,%d,%lld,%x,%ld,%ld,%ld,%ld,[%lld,%ld] %d\n",
-	 cpu, original_kicker, local_bit, get_check_bit(),
-	 (local_bit ^ get_check_bit()) & get_check_bit(), lasthpg_cpu,
-	 lasthpg_act, lasthpg_t, atomic_read(&plug_mask), lastsuspend_t / 1000000,
-	 lastsuspend_syst / 1000000, lastresume_t / 1000000, lastresume_syst / 1000000,
-	 wk_tsk_kick_time[cpu], curInterval, r_counter);
 
 	if ((local_bit & get_check_bit()) == get_check_bit()) {
 		all_k_timer_t = sched_clock();
 		del_timer(&aee_dump_timer);
 		aee_dump_timer_t = 0;
 		cpus_skip_bit = 0;
-		msg_buf[5] = 'k';
 		g_hang_detected = 0;
 		dump_timeout = 0;
 		local_bit = 0;
@@ -494,8 +478,6 @@ static void kwdt_process_kick(int local_bit, int cpu,
 	}
 
 	spin_unlock_bh(&lock);
-
-	pr_info("%s", msg_buf);
 
 	if (dump_timeout) {
 #if IS_ENABLED(CONFIG_MTK_TICK_BROADCAST_DEBUG)
@@ -545,17 +527,14 @@ static int kwdt_thread(void *arg)
 	int cpu = 0;
 	int local_bit = 0;
 	unsigned long curInterval = 0;
-	char msg_buf[WK_MAX_MSG_SIZE];
 
 	sched_setscheduler(current, SCHED_FIFO, &param);
 	set_current_state(TASK_INTERRUPTIBLE);
 
 	for (;;) {
 		if (kthread_should_stop()) {
-			pr_info("[wdk] kthread_should_stop do !!\n");
 			break;
 		}
-		msg_buf[0] = '\0';
 		/*
 		 * pr_debug("[wdk] loc_wk_wdt(%x),loc_wk_wdt->ready(%d)\n",
 		 * loc_wk_wdt ,loc_wk_wdt->ready);
@@ -582,7 +561,7 @@ static int kwdt_thread(void *arg)
 				curInterval = g_kinterval*1000*1000;
 
 			kwdt_process_kick(local_bit, cpu, curInterval,
-				msg_buf, *((unsigned int *)arg));
+				*((unsigned int *)arg));
 		} else {
 			spin_unlock_bh(&lock);
 		}
