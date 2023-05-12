@@ -1108,19 +1108,6 @@ static int mt6358_batadc_cali(struct mt635x_auxadc_device *adc_dev,
 	if (g_BGRCALI_EN == 1)
 		vbat_out = wk_bgr_cali(T_curr, vbat_out);
 
-	if (abs(vbat_out - vbat_out_old) > 1000) {
-		pr_notice("vbat_out_old=%d, vthr=%d, T_curr=%d, vbat_out=%d\n",
-			vbat_out_old, vthr, T_curr, vbat_out);
-		pr_notice("%d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-			g_DEGC, g_O_VTS, g_O_SLOPE_SIGN, g_O_SLOPE,
-			g_SIGN_AUX, g_SIGN_BGRL, g_SIGN_BGRH,
-			g_AUXCALI_EN, g_BGRCALI_EN,
-			g_GAIN_AUX, g_GAIN_BGRL, g_GAIN_BGRH,
-			g_TEMP_L_CALI, g_TEMP_H_CALI);
-	} else
-		pr_info("vbat_out_old=%d, vthr=%d, T_curr=%d, vbat_out=%d\n",
-			vbat_out_old, vthr, T_curr, vbat_out);
-
 	if (precision_factor > 1)
 		vbat_out = DIV_ROUND_CLOSEST(vbat_out, precision_factor);
 	return vbat_out;
