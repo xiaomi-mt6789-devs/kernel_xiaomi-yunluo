@@ -452,20 +452,21 @@ static void update_bus_bw(struct mu3h_sch_bw_info *sch_bw,
 static int check_fs_bus_bw(struct mu3h_sch_ep_info *sch_ep, int offset)
 {
 	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
-	u32 tmp;
+	u32 num_esit, tmp;
 	int base;
-	int i, j, k;
+	int i, j;
+	u8 uframes = DIV_ROUND_UP(sch_ep->maxpkt, FS_PAYLOAD_MAX);
 
-	for (i = 0; i < sch_ep->num_esit; i++) {
+	num_esit = XHCI_MTK_MAX_ESIT / sch_ep->esit;
+
+	if (sch_ep->ep_type == INT_IN_EP || sch_ep->ep_type == ISOC_IN_EP)
+		offset++;
+
+	for (i = 0; i < num_esit; i++) {
 		base = offset + i * sch_ep->esit;
 
-		/*
-		 * Compared with hs bus, no matter what ep type,
-		 * the hub will always delay one uframe to send data
-		 */
-		for (j = 0; j < sch_ep->cs_count; j++) {
-			k = XHCI_MTK_BW_INDEX(base + j);
-			tmp = tt->fs_bus_bw[k] + sch_ep->bw_cost_per_microframe;
+		for (j = 0; j < uframes; j++) {
+			tmp = tt->fs_bus_bw[base + j] + sch_ep->bw_cost_per_microframe;
 			if (tmp > FS_PAYLOAD_MAX)
 				return -ESCH_BW_OVERFLOW;
 		}
@@ -539,22 +540,27 @@ static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, u32 offset)
 static void update_sch_tt(struct mu3h_sch_ep_info *sch_ep, bool used)
 {
 	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
-	u32 base;
+	u32 base, num_esit;
 	int bw_updated;
-	int i, j, k;
+	int i, j;
+	int offset = sch_ep->offset;
+	u8 uframes = DIV_ROUND_UP(sch_ep->maxpkt, FS_PAYLOAD_MAX);
+
+	num_esit = XHCI_MTK_MAX_ESIT / sch_ep->esit;
 
 	if (used)
 		bw_updated = sch_ep->bw_cost_per_microframe;
 	else
 		bw_updated = -sch_ep->bw_cost_per_microframe;
 
-	for (i = 0; i < sch_ep->num_esit; i++) {
-		base = sch_ep->offset + i * sch_ep->esit;
+	if (sch_ep->ep_type == INT_IN_EP || sch_ep->ep_type == ISOC_IN_EP)
+		offset++;
 
-		for (j = 0; j < sch_ep->cs_count; j++) {
-			k = XHCI_MTK_BW_INDEX(base + j);
-			tt->fs_bus_bw[k] += bw_updated;
-		}
+	for (i = 0; i < num_esit; i++) {
+		base = offset + i * sch_ep->esit;
+
+		for (j = 0; j < uframes; j++)
+			tt->fs_bus_bw[base + j] += bw_updated;
 	}
 
 	if (used)
@@ -576,9 +582,9 @@ static int load_ep_bw(struct mu3h_sch_bw_info *sch_bw,
 	return 0;
 }
 
-static int check_sch_bw(struct mu3h_sch_ep_info *sch_ep)
+static int check_sch_bw(struct mu3h_sch_bw_info *sch_bw,
+			struct mu3h_sch_ep_info *sch_ep)
 {
-	struct mu3h_sch_bw_info *sch_bw = sch_ep->bw_info;
 	const u32 bw_boundary = get_bw_boundary(sch_ep->speed);
 	u32 offset;
 	u32 worst_bw;
@@ -754,6 +760,7 @@ int xhci_mtk_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
 	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
 	struct xhci_virt_device *virt_dev = xhci->devs[udev->slot_id];
 	struct mu3h_sch_ep_info *sch_ep;
+    struct mu3h_sch_bw_info *sch_bw;
 	int ret;
 
 	xhci_dbg(xhci, "%s() udev %s\n", __func__, dev_name(&udev->dev));
@@ -762,8 +769,9 @@ int xhci_mtk_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
 		struct xhci_ep_ctx *ep_ctx;
 		struct usb_host_endpoint *ep = sch_ep->ep;
 		unsigned int ep_index = xhci_get_endpoint_index(&ep->desc);
+        sch_bw = get_bw_info(mtk, udev, sch_ep->ep);
 
-		ret = check_sch_bw(sch_ep);
+		ret = check_sch_bw(sch_bw, sch_ep);
 		if (ret) {
 			xhci_err(xhci, "Not enough bandwidth! (%s)\n",
 				 sch_error_string(-ret));
