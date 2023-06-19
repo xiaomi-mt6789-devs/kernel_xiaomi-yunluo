@@ -1806,7 +1806,6 @@ config SND_SOC_ML26124
 
 config SND_SOC_MT6366
 	tristate "MediaTek MT6366 Codec driver"
-	depends on MFD_MT6366
 	help
 	  MediaTek MT6366 is a audio codec which contain
 	  three ADC for uplink path(MICs), and
