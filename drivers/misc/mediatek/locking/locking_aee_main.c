@@ -133,7 +133,9 @@ static void ldt_disable_aee(void)
 
 static int __init locking_aee_init(void)
 {
-	monitor_hang_regist_ldt(ldt_disable_aee);
+#if IS_ENABLED(CONFIG_MTK_HANG_DETECT)
+    monitor_hang_regist_ldt(ldt_disable_aee)
+#endif
 	kthread_run(locking_aee_thread, NULL, "locking_aee");
 	lockdep_test_init();
 	return 0;
@@ -142,7 +144,9 @@ static int __init locking_aee_init(void)
 static void __exit locking_aee_exit(void)
 {
 	unregister_kretprobe(&debug_locks_off_kretprobe);
-	monitor_hang_regist_ldt(NULL);
+#if IS_ENABLED(CONFIG_MTK_HANG_DETECT)
+    monitor_hang_regist_ldt(NULL);
+#endif
 }
 
 module_init(locking_aee_init);
