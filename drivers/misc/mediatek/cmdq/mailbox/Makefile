@@ -37,35 +37,6 @@ mtk-cmdq-drv-ext-y := mtk-cmdq-mailbox-ext.o mtk-cmdq-helper-ext.o cmdq-util.o
 
 obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-test.o
 
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6833.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6833.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6853.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6853.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6873.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6873.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6885.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6885.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6893.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6893.o
-endif
-
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6983.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6983.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6879.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6879.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6895.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6895.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6855.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6855.o
-endif
-
 ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6789.c),)
 obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6789.o
 endif
