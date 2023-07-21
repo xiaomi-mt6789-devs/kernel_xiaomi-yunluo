@@ -2285,10 +2285,14 @@ static int nvt_set_cur_value(int nvt_mode, int nvt_value)
 		ts->db_wakeup = nvt_value ? (ts->db_wakeup | 0x01) : (ts->db_wakeup & 0xFE);
 		ts->db_wakeup = nvt_value ? (ts->db_wakeup | 0x02) : (ts->db_wakeup & 0xFD); /* enable pen wake up */
 		nvt_set_gesture_mode();
+
+		xiaomi_touch_interfaces.touch_mode[nvt_mode][SET_CUR_VALUE] = nvt_value;
 		return 0;
 	} else if (nvt_mode == Touch_Pen_ENABLE && ts && nvt_value >= 0) {
 		ts->pen_input_dev_enable = !!nvt_value;
 		NVT_LOG("%s pen input dev ", ts->pen_input_dev_enable ? "ENABLE" : "DISABLE");
+
+		xiaomi_touch_interfaces.touch_mode[nvt_mode][SET_CUR_VALUE] = nvt_value;
 		return 0;
 	}
 
