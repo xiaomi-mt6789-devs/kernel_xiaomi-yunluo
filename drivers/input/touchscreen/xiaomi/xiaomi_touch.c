@@ -215,6 +215,7 @@ static struct xiaomi_touch xiaomi_touch_dev = {
 	.wait_queue = __WAIT_QUEUE_HEAD_INITIALIZER(xiaomi_touch_dev.wait_queue),
 	.fod_press_status_mutex = __MUTEX_INITIALIZER(xiaomi_touch_dev.fod_press_status_mutex),
 	.gesture_single_tap_mutex = __MUTEX_INITIALIZER(xiaomi_touch_dev.gesture_single_tap_mutex),
+	.gesture_double_tap_mutex = __MUTEX_INITIALIZER(xiaomi_touch_dev.gesture_double_tap_mutex),
 };
 
 struct xiaomi_touch *xiaomi_touch_dev_get(int minor)
@@ -1032,6 +1033,78 @@ int update_clicktouch_raw(void)
 }
 EXPORT_SYMBOL_GPL(update_clicktouch_raw);
 
+static ssize_t gesture_double_tap_value_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct xiaomi_touch_interface* touch_data = NULL;
+	int value = 0;
+
+	mutex_lock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+
+	if (!touch_pdata) {
+		mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+		return -ENOMEM;
+	}
+
+	// Only touch ID 0 is supported
+	touch_data = touch_pdata->touch_data[0];
+
+	if (!touch_data) {
+		mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+		return -ENODEV;
+	}
+
+	if (touch_data->getModeValue) {
+		value = touch_data->getModeValue(Touch_Doubletap_Mode, SET_CUR_VALUE);
+	} else {
+		pr_err("%s: No getModeValue", __func__);
+	}
+
+	mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+	return snprintf(buf, PAGE_SIZE, "%d\n", value);
+}
+
+static ssize_t gesture_double_tap_value_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	struct xiaomi_touch_interface* touch_data = NULL;
+	int enabled, ret = 0;
+
+	mutex_lock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+
+	if (!touch_pdata) {
+		mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+		return -ENOMEM;
+	}
+
+	// Only touch ID 0 is supported
+	touch_data = touch_pdata->touch_data[0];
+
+	if (!touch_data) {
+		mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+		return -ENODEV;
+	}
+
+	if (sscanf(buf, "%d", &enabled) < 0) {
+		return -EINVAL;
+	}
+
+	if (enabled < 0 || enabled > 1) {
+		pr_err("Invalid param %d for %s\n", enabled, __func__);
+		mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+		return -EINVAL;
+	}
+
+	if (touch_data->setModeValue) {
+		ret = touch_data->setModeValue(Touch_Doubletap_Mode, enabled);
+	}
+
+	pr_info("%s: Set double tap value to %d ret: %d", __func__, enabled, ret);
+
+	mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+	return count;
+}
+
 int xiaomi_touch_set_suspend_state(int state)
 {
 	if (!touch_pdata) {
@@ -1169,6 +1242,8 @@ static DEVICE_ATTR(fod_press_status, (S_IRUGO | S_IWUSR | S_IWGRP), fod_press_st
 
 static DEVICE_ATTR(gesture_single_tap_state, (S_IRUGO | S_IWUSR | S_IWGRP), gesture_single_tap_value_show, NULL);
 
+static DEVICE_ATTR(gesture_double_tap_state, (S_IRUGO | S_IWUSR | S_IWGRP), gesture_double_tap_value_show, gesture_double_tap_value_store);
+
 static struct attribute *touch_attr_group[] = {
 	&dev_attr_enable_touch_raw.attr,
 	&dev_attr_enable_touch_delta.attr,
@@ -1196,6 +1271,7 @@ static struct attribute *touch_attr_group[] = {
 	&dev_attr_suspend_state.attr,
 	&dev_attr_fod_press_status.attr,
 	&dev_attr_gesture_single_tap_state.attr,
+	&dev_attr_gesture_double_tap_state.attr,
 	NULL,
 };
 
