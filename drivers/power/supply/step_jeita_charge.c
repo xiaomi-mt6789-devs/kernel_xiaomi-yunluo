@@ -152,7 +152,7 @@ static void monitor_thermal_limit(struct mtk_charger *info)
 		vote(info->fcc_votable, THERMAL_VOTER, true, info->thermal_limit[1][thermal_level]);
 		break;
 	default:
-		chr_err("not support psy_type to check charger parameters");
+		break;
 	}
 }
 

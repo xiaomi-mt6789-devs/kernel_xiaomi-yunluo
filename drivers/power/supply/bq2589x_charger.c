@@ -1335,7 +1335,6 @@ static int bq2589x_init_device(struct bq2589x *bq)
 	int ret;
 	bq->input_suspend = false;
 	bq->is_soft_full = false;
-	bq2589x_dump_regs(bq);
 	bq2589x_disable_watchdog_timer(bq);
 	ret = bq2589x_enable_hvdcp(bq);
 	ret = bq2589x_adc_start(bq, true);
@@ -1349,7 +1348,6 @@ static int bq2589x_init_device(struct bq2589x *bq)
 	ret = bq2589x_disable_aicl(bq);
 	ret = bq2589x_set_recharge(bq);
 	ret = bq2589x_set_ir_compensation(bq, 40, 64);
-	bq2589x_dump_regs(bq);
 
 	return 0;
 }

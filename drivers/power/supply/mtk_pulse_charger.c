@@ -490,7 +490,6 @@ static int pchr_do_algorithm(struct mtk_charger *info)
 			info->setting.cv);
 	}
 
-	charger_dev_dump_registers(info->chg1_dev);
 	return 0;
 }
 

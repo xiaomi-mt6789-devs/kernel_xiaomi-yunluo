@@ -366,7 +366,7 @@ done:
 		is_basic = true;
 	}
 	/* For TC_018, pleasae don't modify the format */
-	chr_err("m:%d chg1:%d,%d,%d,%d chg2:%d,%d,%d,%d dvchg1:%d sc:%d %d %d type:%d:%d usb_unlimited:%d usbif:%d usbsm:%d aicl:%d atm:%d bm:%d b:%d\n",
+	chr_debug("m:%d chg1:%d,%d,%d,%d chg2:%d,%d,%d,%d dvchg1:%d sc:%d %d %d type:%d:%d usb_unlimited:%d usbif:%d usbsm:%d aicl:%d atm:%d bm:%d b:%d\n",
 		info->config,
 		_uA_to_mA(pdata->thermal_input_current_limit),
 		_uA_to_mA(pdata->thermal_charging_current_limit),
@@ -545,12 +545,6 @@ static int do_algorithm(struct mtk_charger *info)
 				charger_dev_enable(info->chg1_dev,  true);
 		}
 	}
-
-	if (info->chg1_dev != NULL)
-		charger_dev_dump_registers(info->chg1_dev);
-
-	if (info->chg2_dev != NULL)
-		charger_dev_dump_registers(info->chg2_dev);
 
 	return 0;
 }
