@@ -30,6 +30,7 @@ mediatek-modules/connectivity/common
 mediatek-modules/connectivity/wlan/adaptor
 mediatek-modules/connectivity/wlan/core/gen4m
 mediatek-modules/connectivity/bt/mt66xx/wmt
+mediatek-modules/connectivity/fmradio
 "
 
 # Wlan driver build environnement
@@ -47,4 +48,8 @@ export ADAPTOR_MODULE_NAME="wmt_chrdev_wifi"
 
 # Bluetooth configuration
 export BT_PLATFORM="connac1x"
+
+# FMRadio
+export CFG_FM_PLAT="mt6631_6635"
+export CFG_FM_CHIP_ID="${CFG_FM_PLAT}"
 
