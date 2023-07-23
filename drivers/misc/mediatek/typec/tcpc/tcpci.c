@@ -354,7 +354,7 @@ int tcpci_set_low_power_mode(
 {
 	int rv = 0;
 
-#if CONFIG_TCPC_LOW_POWER_MODE
+#if (CONFIG_TCPC_LOW_POWER_MODE && IS_ENABLED(CONFIG_USB_POWER_DELIVERY))
 	int i = 0;
 	/* [Workaround]
 	 * rx_buffer can't clear, try to reset protocol before disable bmc clock
