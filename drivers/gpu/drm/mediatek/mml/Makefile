@@ -57,10 +57,6 @@ ifneq (,$(strip $(CONFIG_MMPROFILE)))
 mtk-mml-objs += mtk-mml-mmp.o
 endif
 
-ifneq ($(wildcard $(srctree)/$(src)/mtk-mml-tp-mt6893.c),)
-obj-$(CONFIG_MTK_MML) += mtk-mml-mt6893.o
-mtk-mml-mt6893-objs := mtk-mml-tp-mt6893.o
-endif
 ifneq ($(wildcard $(srctree)/$(src)/mtk-mml-tp-mt6983.c),)
 obj-$(CONFIG_MTK_MML) += mtk-mml-mt6983.o
 mtk-mml-mt6983-objs := mtk-mml-tp-mt6983.o
