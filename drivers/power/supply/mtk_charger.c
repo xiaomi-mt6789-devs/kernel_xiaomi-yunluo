@@ -672,9 +672,9 @@ void night_charging_set_flag(bool night_charging)
 	chr_err("%s pinfo->night_charging=%d\n", __func__, pinfo->night_charging);
 }
 EXPORT_SYMBOL(night_charging_set_flag);
-int night_charging_get_flag()
+int night_charging_get_flag(void)
 {
-	if(pinfo ==NULL)
+	if(pinfo == NULL)
 		return 0;
 	chr_err("%s pinfo->night_charging=%d\n", __func__, pinfo->night_charging);
 	return pinfo->night_charging;
