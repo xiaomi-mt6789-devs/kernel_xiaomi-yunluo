@@ -321,6 +321,8 @@ err_parameter:
 
 int ged_dmabuf_set_name(int32_t share_fd, char *name)
 {
+	struct dma_buf *dmabuf;
+
 	if (share_fd < 0) {
 		GED_PDEBUG("%s: invalid value of share_fd %d", __func__, share_fd);
 		return -1;
@@ -330,8 +332,6 @@ int ged_dmabuf_set_name(int32_t share_fd, char *name)
 		GED_PDEBUG("%s: name is NULL", __func__);
 		return -1;
 	}
-
-	struct dma_buf *dmabuf;
 
 	dmabuf = dma_buf_get(share_fd);
 
