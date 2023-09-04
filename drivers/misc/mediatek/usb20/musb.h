@@ -188,6 +188,7 @@ struct otg_switch_mtk {
 	u32 sw_state;
 	enum usb_role latest_role;
 	enum mt_usb_dr_operation_mode op_mode;
+	bool usb_data_enabled;
 };
 
 #endif				/* __LINUX_USB_MUSB_H */

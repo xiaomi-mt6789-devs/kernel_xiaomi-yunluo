@@ -279,6 +279,9 @@ static int mt_usb_role_sx_set(struct usb_role_switch *sw, enum usb_role role)
 		return 0;
 	}
 
+	if (!otg_sx->usb_data_enabled)
+		return 0;
+
 	id_event = (role == USB_ROLE_HOST);
 	vbus_event = (role == USB_ROLE_DEVICE);
 
@@ -427,7 +430,45 @@ static ssize_t cmode_show(struct device *dev,
 }
 static DEVICE_ATTR_RW(cmode);
 
+static ssize_t usb_data_enabled_show(struct device *dev,
+		struct device_attribute *attr,
+	    char *buf)
+{
+	struct musb *mtk_musb = dev_get_drvdata(dev);
+	struct otg_switch_mtk *otg_sx = mtk_musb->otg_sx;
+
+	return sprintf(buf, "%d\n", otg_sx->usb_data_enabled);
+}
+
+static ssize_t usb_data_enabled_store(struct device *dev,
+				 struct device_attribute *attr,
+				 const char *buf, size_t count)
+{
+	struct musb *mtk_usb = dev_get_drvdata(dev);
+	struct otg_switch_mtk *otg_sx = mtk_usb->otg_sx;
+	enum usb_role role = otg_sx->latest_role;
+	bool enabled;
+
+	if (kstrtobool(buf, &enabled))
+		return -EINVAL;
+
+	if (!enabled) {
+	    mt_usb_role_sx_set(otg_sx->role_sw, USB_ROLE_NONE);
+		otg_sx->usb_data_enabled = false;
+		otg_sx->latest_role = role;
+	}
+	else {
+		otg_sx->usb_data_enabled = true;
+		mt_usb_role_sx_set(otg_sx->role_sw, otg_sx->latest_role);
+	}
+
+	return count;
+}
+
+static DEVICE_ATTR_RW(usb_data_enabled);
+
 static struct attribute *mt_usb_dr_attrs[] = {
+	&dev_attr_usb_data_enabled.attr,
 	&dev_attr_cmode.attr,
 	NULL
 };
@@ -447,6 +488,9 @@ int mt_usb_otg_switch_init(struct mt_usb_glue *glue)
 
 	INIT_WORK(&otg_sx->id_work, mt_usb_id_work);
 	INIT_WORK(&otg_sx->vbus_work, mt_usb_vbus_work);
+    
+	/* set the initial value */
+	otg_sx->usb_data_enabled = true;
 
 	/* default as host, update state */
 	otg_sx->sw_state = mtk_musb->is_host ?
