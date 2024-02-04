@@ -1499,8 +1499,6 @@ static int __gpufreq_freq_scale_gpu(unsigned int freq_old, unsigned int freq_new
 	/* because return value is different across the APIs */
 	ret = GPUFREQ_SUCCESS;
 
-	/* notify gpu freq change to DDK */
-	mtk_notify_gpu_freq_change(0, freq_new);
 #if GPUFREQ_HISTORY_ENABLE
 	if (freq_old != freq_new) {
 		gpufreq_set_history_state(HISTORY_CHANGE_FREQ_TOP);
