@@ -1004,7 +1004,6 @@ void tracing_on(void)
 	trace_tracing_on(1, CALLER_ADDR0);
 #endif
 }
-EXPORT_SYMBOL_GPL(tracing_on);
 
 
 static __always_inline void
