@@ -101,7 +101,7 @@ int usb_ep_enable(struct usb_ep *ep)
 		goto out;
 
 	/* UDC drivers can't handle endpoints with maxpacket size 0 */
-	if (!ep->desc || usb_endpoint_maxp(ep->desc) == 0) {
+	if (usb_endpoint_maxp(ep->desc) == 0) {
 		WARN_ONCE(1, "%s: ep%d (%s) has %s\n", __func__, ep->address, ep->name,
 			  (!ep->desc) ? "NULL descriptor" : "maxpacket 0");
 
